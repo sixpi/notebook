@@ -56,20 +56,20 @@ RUN mkdir -p $CONDA_DIR && \
     seaborn \
     && conda clean -yt
 
-# Create jovyan user with UID=1000 and in the 'users' group
-# Grant ownership over the conda dir and home dir, but stick the group as root.
-RUN useradd -m -s /bin/bash -N -u $NB_UID $NB_USER && \
-    mkdir /home/$NB_USER/work && \
-    mkdir /home/$NB_USER/.jupyter && \
-    mkdir /home/$NB_USER/.local && \
-    chown -R $NB_USER:users $CONDA_DIR && \
-    chown -R $NB_USER:users /home/$NB_USER
-
 # Install pip packages
 RUN pip install \
     sblu \
     prody \
     path.py
+
+# Create user with UID=1000 and in the 'users' group
+# Grant ownership over the conda dir and home dir, but stick the group as root.
+RUN useradd -m -s /bin/bash -N -u $NB_UID $NB_USER && \
+    mkdir /home/$NB_USER/work && \
+    mkdir /home/$NB_USER/.jupyter && \
+    mkdir -p /home/$NB_USER/.local/share/jupyter && \
+    chown -R $NB_USER:users $CONDA_DIR && \
+    chown -R $NB_USER:users /home/$NB_USER
 
 # Configure container startup
 EXPOSE 8888
